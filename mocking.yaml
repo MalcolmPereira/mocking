@@ -5,3 +5,4 @@ loglevel: INFO
 https:
   certfile: ./selfsigned_certs/mockingServer.crt
   certkeyfile: ./selfsigned_certs/mockingServer.key
+mocksfolder: ./mocks

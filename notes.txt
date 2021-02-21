@@ -1,12 +1,52 @@
-Name:
-Request:
-    Method:
-    Headers:
-        Content-Type:
-    Body:
-Response:
-    Headers:
-        Content-Type:
-    StatusCode:
-    Body:
+TODO: 
+Supported Types:
+    - JSON
+    - XML
+    - Form
+    - Multipart
+
+OpenAPI to Mocks YAML templates
+
+
+RequestFormat:
+    name: Simple Mock
+    resource: /greeting
+    request:
+        method: GET
+        headers:
+            - Content-Type: application/json
+        body: >
+            {
+            "name": "hello",
+            }
+    response:
+        headers:
+            - Content-Type: application/json
+        statusCode: 200
+        body: >
+            {
+            "value": "hello world",
+            }
+
+
+- Loop for yaml files in dir
+- For each yaml file, unmarshall to Mock Object
+- Create a Loop up table:
+
+    Mapping:
     
+    resource +  request.method + request.headers + request.body
+    
+    to 
+
+    response.headers
+    
+    response.statusCode
+    
+    response.body
+
+- Default Handler maps based on the Lookup table
+- For the request return the mapped response.
+
+
+
