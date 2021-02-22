@@ -35,12 +35,14 @@ func ProcessMocks(mocksFolder string) ([]Mocks, error) {
 	var mockList []Mocks
 
 	logger.Info("Start processing mocks folders : ", mocksFolder)
-	files, err := ioutil.ReadDir(mocksFolder)
 
+	logger.Debug("Reading mocks folders : ", mocksFolder)
+	files, err := ioutil.ReadDir(mocksFolder)
 	if err != nil {
 		logger.Error("Error reading mocks folders", err)
 		return nil, errors.New("Error reading mocks folders")
 	}
+	logger.Debug("Done Reading mocks folders : ", mocksFolder)
 
 	for _, file := range files {
 
@@ -49,27 +51,27 @@ func ProcessMocks(mocksFolder string) ([]Mocks, error) {
 		}
 
 		if strings.HasSuffix(file.Name(), ".yaml") || strings.HasSuffix(file.Name(), ".yml") {
-			logger.Info("Got File Name : ", file.Name())
 			mocks := Mocks{}
-			logger.Info("Got mocks : ", mocks)
 
+			logger.Debug("Reading File : ", file.Name())
 			fileBytes, err := ioutil.ReadFile(mocksFolder + "/" + file.Name())
 			if err != nil {
 				logger.Error("Error reading mock file ", err)
 				return nil, errors.New("Error reading mock file")
 			}
+			logger.Debug("Done Reading File : ", file.Name())
 
+			logger.Debug("Unmarshaling YAML File : ", file.Name())
 			err = yaml.Unmarshal(fileBytes, &mocks)
 			if err != nil {
 				logger.Error("Error processing mocking YAML file ", err)
-				return nil, errors.New("Error processing mocking YAML file")
+				logger.Error("Error processing mocking YAML file : ", file.Name())
+				continue
 			}
-
+			logger.Debug("Done Unmarshaling YAML File : ", file.Name())
 			mockList = append(mockList, mocks)
 		}
 	}
-
-	logger.Info("Got mocks ", mockList)
-
+	logger.Debug("Got mocks ", mockList)
 	return mockList, nil
 }
