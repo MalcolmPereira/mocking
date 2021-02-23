@@ -1,0 +1,55 @@
+name: Mock Demo
+resource: /mock
+mocks:
+  - mock:
+      request:
+        method: GET
+        headers:
+          - "Content-Type: application/json"
+      response:
+        headers:
+          - "Content-Type: application/json"
+        status: 200
+        body: >
+          {
+            "value": "GET Request Response - Hello Mocking",
+          }
+  - mock:
+      request:
+        method: POST
+        headers:
+          - "Content-Type: application/json"
+      response:
+        headers:
+          - "Content-Type: application/json"
+        status: 200
+        body: >
+          {
+            "value": "POST Request Response - Hello Mocking",
+          }
+  - mock:
+      request:
+        method: PUT
+        headers:
+          - "Content-Type: application/json"
+      response:
+        headers:
+          - "Content-Type: application/json"
+        status: 200
+        body: >
+          {
+            "value": "PUT Request Response - Hello Mocking",
+          }
+  - mock:
+      request:
+        method: DELETE
+        headers:
+          - "Content-Type: application/json"
+      response:
+        headers:
+          - "Content-Type: application/json"
+        status: 200
+        body: >
+          {
+            "value": "DELETE Request Response - Hello Mocking",
+          }

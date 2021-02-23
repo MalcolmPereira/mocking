@@ -1,4 +1,27 @@
 TODO: 
+ - Ignore Request Body: 
+ 
+ Multiple Responses:
+    - Have multiple Responses
+    - Count (x number request will be the following else default and reset)
+    - Delay Response (sleep fo x time before response)
+    - Conditional Response (check header or check body)
+
+Return File:
+    - Path to file and stream.....
+
+    
+
+Create React App that calls the mock service
+- List Images
+- View Image Details
+- Post New Image 
+ 
+
+ - response
+    - condtion
+
+
 Supported Types:
     - JSON
     - XML
@@ -8,45 +31,7 @@ Supported Types:
 OpenAPI to Mocks YAML templates
 
 
-RequestFormat:
-    name: Simple Mock
-    resource: /greeting
-    request:
-        method: GET
-        headers:
-            - Content-Type: application/json
-        body: >
-            {
-            "name": "hello",
-            }
-    response:
-        headers:
-            - Content-Type: application/json
-        statusCode: 200
-        body: >
-            {
-            "value": "hello world",
-            }
 
-
-- Loop for yaml files in dir
-- For each yaml file, unmarshall to Mock Object
-- Create a Loop up table:
-
-    Mapping:
-    
-    resource +  request.method + request.headers + request.body
-    
-    to 
-
-    response.headers
-    
-    response.statusCode
-    
-    response.body
-
-- Default Handler maps based on the Lookup table
-- For the request return the mapped response.
 
 
 
