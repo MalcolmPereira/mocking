@@ -11,16 +11,6 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
-//Response to return
-type Response struct {
-	Headers         []string
-	Status          int
-	Body            string
-	Delay           int
-	SkipEvery       int
-	ResponseCounter int
-}
-
 //MockResponses to return
 type MockResponses struct {
 	Path         string
@@ -29,31 +19,37 @@ type MockResponses struct {
 	Responses    []Response
 }
 
-//Mocks to return
-type Mocks struct {
+//AllMock to return
+type AllMocks struct {
 	Responses []MockResponses
 }
 
 //SetMocks set up mock handlers
 func SetMocks(router *mux.Router, resources []MockResource) {
+
 	var allMocks []MockResponses
 
 	for _, resource := range resources {
-		logger.Debug("Got resource: ", resource.Resource)
+		logger.Info("Got resource: ", resource.Resource)
 
 		for _, mock := range resource.Mocks {
 
-			path := mock.Mock.Path
+			logger.Info("Got resource: ", resource.Resource)
+
+			path := mock.Mock.Request.Path
+
+			logger.Info("Got path: ", path)
+
 			if len(strings.TrimSpace(path)) > 0 && !strings.HasPrefix(strings.TrimSpace(path), "/") {
 				path = resource.Resource + "/" + path
 			} else {
 				path = resource.Resource + path
 			}
-			mock.Mock.Path = path
+			mock.Mock.Request.Path = path
 
 			method := mock.Mock.Request.Method
 			logger.Debug("Got Resource Path: ", path)
-			logger.Debug("Got mock.Mock.Path: ", mock.Mock.Path)
+			logger.Debug("Got mock.Mock.Path: ", mock.Mock.Request.Path)
 			logger.Debug("Got Resource Method: ", method)
 
 			var responseMocks []Response
@@ -68,20 +64,20 @@ func SetMocks(router *mux.Router, resources []MockResource) {
 				}
 				responseMocks = append(responseMocks, *responseMock)
 			}
-
 			mockResponse := &MockResponses{
-				Path:         mock.Mock.Path,
+				Path:         mock.Mock.Request.Path,
 				Method:       mock.Mock.Request.Method,
 				NextResponse: 0,
 				Responses:    responseMocks,
 			}
-			logger.Info("Creating Handler for resource and method ", resource, " :  ", method)
+
+			logger.Info("Creating Handler for resource and method ", mock.Mock.Request.Path, " :  ", method)
 			router.HandleFunc(path, mockResponse.mockingHandler).Methods(method)
 
 			allMocks = append(allMocks, *mockResponse)
 		}
 	}
-	mockDefault := &Mocks{
+	mockDefault := &AllMocks{
 		Responses: allMocks,
 	}
 	router.HandleFunc("/", mockDefault.mockingDefaultHandler).Methods(http.MethodGet, http.MethodPut, http.MethodPatch, http.MethodOptions)
@@ -126,7 +122,7 @@ func (mockResponse *MockResponses) mockingHandler(w http.ResponseWriter, r *http
 }
 
 //mockingDefaultHandler is the default handler
-func (mocks *Mocks) mockingDefaultHandler(w http.ResponseWriter, _ *http.Request) {
+func (mocks *AllMocks) mockingDefaultHandler(w http.ResponseWriter, _ *http.Request) {
 	mockingJSON, err := json.Marshal(mocks)
 	w.Header().Set("Content-Type", "application/json")
 	if err != nil {

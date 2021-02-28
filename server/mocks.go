@@ -13,36 +13,52 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var mockResourceMap map[string]string = make(map[string]string)
-
-//MockResource struct wraps mocks
+//MockResource struct wraps a mock resource
 type MockResource struct {
 	FileName string
-	Name     string `yaml:"name"`
-	Resource string `yaml:"resource"`
-	Mocks    []struct {
-		Mock struct {
-			Path    string `yaml:"path"`
-			Request struct {
-				Method string `yaml:"method"`
-			} `yaml:"request"`
-			Responses []struct {
-				Response struct {
-					Headers         []string `yaml:"headers"`
-					Status          int      `yaml:"status"`
-					Body            string   `yaml:"body"`
-					Delay           int      `yaml:"delay"`
-					SkipEvery       int      `yaml:"skipevery"`
-					ResponseCounter int
-				} `yaml:"response"`
-			} `yaml:"responses"`
-		} `yaml:"mock"`
-	} `yaml:"mocks"`
+	Name     string  `yaml:"name"`
+	Resource string  `yaml:"resource"`
+	Mocks    []Mocks `yaml:"mocks"`
 }
+
+//Mocks struct wraps mocks
+type Mocks struct {
+	Mock Mock `yaml:"mock"`
+}
+
+//Mock struct wraps the request and reponses for mocking
+type Mock struct {
+	Request   Request     `yaml:"request"`
+	Responses []Responses `yaml:"responses"`
+}
+
+//Request warps the mock request method and path
+type Request struct {
+	Path   string `yaml:"path"`
+	Method string `yaml:"method"`
+}
+
+//Responses wraps the responses available for the request
+type Responses struct {
+	Response Response `yaml:"response"`
+}
+
+//Response wraps the response
+type Response struct {
+	Headers         []string `yaml:"headers"`
+	Status          int      `yaml:"status"`
+	Body            string   `yaml:"body"`
+	Delay           int      `yaml:"delay"`
+	SkipEvery       int      `yaml:"skipevery"`
+	ResponseCounter int
+}
+
+var mockResourceMap map[string]string = make(map[string]string)
 
 //ProcessMocks processes mocks available in the folder list
 func ProcessMocks(mocksFolders []string) ([]MockResource, error) {
 	var mockResourceList []MockResource
+
 	for _, mockFolder := range mocksFolders {
 		logger.Debug("Start processing mocks folder : ", mockFolder)
 		mocks, err := processMockFolder(mockFolder)
@@ -77,6 +93,7 @@ func processMockFiles(mockFolder string, files []os.FileInfo) ([]MockResource, e
 		if file.IsDir() {
 			continue
 		}
+
 		if !strings.HasSuffix(file.Name(), ".yaml") && !strings.HasSuffix(file.Name(), ".yml") {
 			continue
 		}
@@ -106,6 +123,7 @@ func processMockFiles(mockFolder string, files []os.FileInfo) ([]MockResource, e
 			logger.Error("Error validating mocking YAML file ", err)
 			continue
 		}
+
 		mockResource.FileName = file.Name()
 		mockList = append(mockList, mockResource)
 	}
@@ -126,13 +144,18 @@ func validateMockResource(mockresource *MockResource, fileName string) error {
 		mockresource.Resource = "/" + mockresource.Resource
 	}
 
-	for _, mock := range mockresource.Mocks {
+	return validateMockRequest(mockresource.Mocks, mockresource.Resource, fileName)
+}
+
+func validateMockRequest(mocks []Mocks, resource string, fileName string) error {
+
+	for _, mock := range mocks {
 		if len(strings.TrimSpace(mock.Mock.Request.Method)) == 0 {
 			logger.Error("Invalid Mock Method, valid mock method required for request in mockResouce: " + fileName)
 			return errors.New("Invalid Mock Method, valid mock method required for request in mockResouce: " + fileName)
 		}
-		resourcePath := mockresource.Resource + mock.Mock.Path + mock.Mock.Request.Method
-		resourceFile := mockResourceMap[mockresource.Resource+mock.Mock.Path+mock.Mock.Request.Method]
+		resourcePath := resource + mock.Mock.Request.Path + mock.Mock.Request.Method
+		resourceFile := mockResourceMap[resource+mock.Mock.Request.Path+mock.Mock.Request.Method]
 		if len(strings.TrimSpace(resourceFile)) != 0 {
 			logger.Error("Invalid Mock definiton, Duplicate Path: " + resourcePath + " , found in: " + resourceFile + " and " + fileName)
 			return errors.New("Invalid Mock definiton, Duplicate Path: " + resourcePath + " , found in: " + resourceFile + " and " + fileName)
@@ -144,20 +167,31 @@ func validateMockResource(mockresource *MockResource, fileName string) error {
 			return errors.New("Invalid Mock Responses, valid mock reponses required for request in mockResouce: " + fileName)
 		}
 
-		for _, mockresponse := range mock.Mock.Responses {
-			if len(strings.TrimSpace(http.StatusText(mockresponse.Response.Status))) == 0 {
-				logger.Error("Invalid Mock Responses Status Code , valid mock reponse status code  required for request  " + resourcePath + " in mockResouce: " + fileName)
-				return errors.New("Invalid Mock Responses Status Code , valid mock reponse status code required for request  " + resourcePath + " in mockResouce: " + fileName)
-			}
-			statusString := strconv.Itoa(mockresponse.Response.Status)
-			resourcePathStatus := resourcePath + statusString
-			resourcePathStatusDup := mockResourceMap[resourcePathStatus]
-			if len(strings.TrimSpace(resourcePathStatusDup)) != 0 {
-				logger.Error("Invalid Mock definiton, Duplicate Status Code : " + statusString + " , found for : " + resourcePath + " int " + fileName)
-				return errors.New("Invalid Mock definiton, Duplicate Status Code : " + statusString + " , found for : " + resourcePath + " int " + fileName)
-			}
-			mockresponse.Response.ResponseCounter = 0
+		err := validateMockResponse(mock.Mock.Responses, resourcePath, fileName)
+		if err != nil {
+			return err
 		}
+	}
+
+	return nil
+}
+
+func validateMockResponse(responses []Responses, resourcePath string, fileName string) error {
+	for _, mockresponse := range responses {
+		if len(strings.TrimSpace(http.StatusText(mockresponse.Response.Status))) == 0 {
+			logger.Error("Invalid Mock Responses Status Code , valid mock reponse status code  required for request  " + resourcePath + " in mockResouce: " + fileName)
+			return errors.New("Invalid Mock Responses Status Code , valid mock reponse status code required for request  " + resourcePath + " in mockResouce: " + fileName)
+		}
+		statusString := strconv.Itoa(mockresponse.Response.Status)
+		resourcePathStatus := resourcePath + statusString
+		resourcePathStatusDup := mockResourceMap[resourcePathStatus]
+
+		if len(strings.TrimSpace(resourcePathStatusDup)) != 0 {
+			logger.Error("Invalid Mock definiton, Duplicate Status Code : " + statusString + " , found for : " + resourcePath + " int " + fileName)
+			return errors.New("Invalid Mock definiton, Duplicate Status Code : " + statusString + " , found for : " + resourcePath + " int " + fileName)
+		}
+
+		mockresponse.Response.ResponseCounter = 0
 	}
 	return nil
 }
