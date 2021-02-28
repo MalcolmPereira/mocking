@@ -18,7 +18,7 @@ mocks:
                     file: ./mocks/cube.png
     - mock:
           request:
-              path: /images/generate
+              path: /generate
               method: POST
           responses:
               - response:
