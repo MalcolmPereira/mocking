@@ -1,8 +1,9 @@
 version: 0.1
 name: MockingServer
 port: 2021
-loglevel: INFO
+loglevel: DEBUG
 https:
   certfile: ./selfsigned_certs/mockingServer.crt
   certkeyfile: ./selfsigned_certs/mockingServer.key
-mocksfolder: ./mocks
+mocksfolders:
+  - ./mocks

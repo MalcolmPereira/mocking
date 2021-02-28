@@ -30,7 +30,7 @@ func StartServer(yamlFilePath string) {
 	LogLevel(mockingYAML.Loglevel)
 
 	logger.Debug("Start Processing Mocks")
-	mocks, err := ProcessMocks(mockingYAML.Mocks)
+	mocks, err := ProcessMocks(mockingYAML.MockFolders)
 	if err != nil {
 		logger.Error("Error processing mocks ", err)
 		return
@@ -42,7 +42,7 @@ func StartServer(yamlFilePath string) {
 }
 
 //start starts the Mocking API Server
-func start(mocks []Mocks) {
+func start(mocks []MockResource) {
 
 	router := mux.NewRouter()
 
