@@ -19,8 +19,7 @@ func TestProcessMocks(t *testing.T) {
 		if strings.EqualFold(mock.Name, "Mock Demo") {
 			assert.Equal(t, "Mock Demo", mock.Name, "Invalid Mock Name")
 			assert.Equal(t, "/mock", mock.Resource, "Invalid Mock Resource")
-			assert.True(t, (len(mock.Mocks) == 4), "Invalid Mocks")
-
+			assert.True(t, (len(mock.Mocks) == 5), "Invalid Mocks")
 		}
 	}
 }

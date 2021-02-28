@@ -48,6 +48,7 @@ type Response struct {
 	Headers         []string `yaml:"headers"`
 	Status          int      `yaml:"status"`
 	Body            string   `yaml:"body"`
+	File            string   `yaml:"file"`
 	Delay           int      `yaml:"delay"`
 	SkipEvery       int      `yaml:"skipevery"`
 	ResponseCounter int
@@ -190,7 +191,6 @@ func validateMockResponse(responses []Responses, resourcePath string, fileName s
 			logger.Error("Invalid Mock definiton, Duplicate Status Code : " + statusString + " , found for : " + resourcePath + " int " + fileName)
 			return errors.New("Invalid Mock definiton, Duplicate Status Code : " + statusString + " , found for : " + resourcePath + " int " + fileName)
 		}
-
 		mockresponse.Response.ResponseCounter = 0
 	}
 	return nil

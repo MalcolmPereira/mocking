@@ -2,7 +2,10 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -30,8 +33,6 @@ func SetMocks(router *mux.Router, resources []MockResource) {
 	var allMocks []MockResponses
 
 	for _, resource := range resources {
-		logger.Info("Got resource: ", resource.Resource)
-
 		for _, mock := range resource.Mocks {
 
 			logger.Info("Got resource: ", resource.Resource)
@@ -48,9 +49,8 @@ func SetMocks(router *mux.Router, resources []MockResource) {
 			mock.Mock.Request.Path = path
 
 			method := mock.Mock.Request.Method
-			logger.Debug("Got Resource Path: ", path)
-			logger.Debug("Got mock.Mock.Path: ", mock.Mock.Request.Path)
-			logger.Debug("Got Resource Method: ", method)
+			logger.Debug("Got Resource Path: ", mock.Mock.Request.Path)
+			logger.Debug("Got Resource Method: ", mock.Mock.Request.Method)
 
 			var responseMocks []Response
 			for _, mockResponse := range mock.Mock.Responses {
@@ -58,6 +58,7 @@ func SetMocks(router *mux.Router, resources []MockResource) {
 					Headers:         mockResponse.Response.Headers,
 					Status:          mockResponse.Response.Status,
 					Body:            mockResponse.Response.Body,
+					File:            mockResponse.Response.File,
 					Delay:           mockResponse.Response.Delay,
 					SkipEvery:       mockResponse.Response.SkipEvery,
 					ResponseCounter: mockResponse.Response.ResponseCounter,
@@ -117,8 +118,32 @@ func (mockResponse *MockResponses) mockingHandler(w http.ResponseWriter, r *http
 			logger.Warn("Skipping Invalid Response Header : ", headerString)
 		}
 	}
-	w.WriteHeader(response.Status)
-	w.Write([]byte(response.Body))
+
+	if len(strings.TrimSpace(response.Body)) > 0 {
+		w.WriteHeader(response.Status)
+		w.Write([]byte(response.Body))
+
+	} else if len(strings.TrimSpace(response.File)) > 0 {
+		logger.Info("Now Reading File ", response.File)
+		filedata, fileErr := ioutil.ReadFile(response.File)
+
+		if fileErr != nil {
+			logger.Info("Error Reading File ", fileErr)
+			w.WriteHeader(500)
+			w.Write([]byte("Error Reading File: " + response.File))
+		}
+
+		w.WriteHeader(200)
+		fileBuffer := bytes.NewBuffer(filedata)
+		if _, err := fileBuffer.WriteTo(w); err != nil {
+			fmt.Fprintf(w, "%s", err)
+			logger.Error("Error writing file to http ", err)
+		}
+
+	} else {
+		w.WriteHeader(response.Status)
+		w.Write([]byte(""))
+	}
 }
 
 //mockingDefaultHandler is the default handler

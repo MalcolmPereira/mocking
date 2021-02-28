@@ -3,6 +3,16 @@ resource: /imageapi
 mocks:
     - mock:
           request:
+              path: /images/{imageid}
+              method: GET
+          responses:
+              - response:
+                    headers:
+                        - "Content-Type: application/octet-stream"
+                    status: 200
+                    file: ./mocks/sample.jpg
+    - mock:
+          request:
               path: /images
               method: GET
           responses:
