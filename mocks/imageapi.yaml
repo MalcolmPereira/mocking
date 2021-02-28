@@ -11,6 +11,43 @@ mocks:
                         - "Content-Type: application/octet-stream"
                     status: 200
                     file: ./mocks/sample.jpg
+              - response:
+                    headers:
+                        - "Content-Type: application/octet-stream"
+                    status: 200
+                    file: ./mocks/cube.png
+    - mock:
+          request:
+              path: /images/generate
+              method: POST
+          responses:
+              - response:
+                    headers:
+                        - "Content-Type: application/octet-stream"
+                    status: 200
+                    file: ./mocks/sample.jpg
+              - response:
+                    headers:
+                        - "Content-Type: application/octet-stream"
+                    status: 200
+                    file: ./mocks/cube.png
+    - mock:
+          request:
+              path: /validate
+              method: POST
+          responses:
+              - response:
+                    headers:
+                        - "Content-Type: application/json"
+                    status: 200
+                    body: >
+                        {
+                            "height": 101,
+                            "width": 101,
+                            "size": 1024,
+                            "mimetype": "image/png"
+                        }
+
     - mock:
           request:
               path: /images

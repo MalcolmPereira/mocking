@@ -22,7 +22,7 @@ type MockResponses struct {
 	Responses    []Response
 }
 
-//AllMock to return
+//AllMocks to return
 type AllMocks struct {
 	Responses []MockResponses
 }
@@ -89,15 +89,23 @@ func (mockResponse *MockResponses) mockingHandler(w http.ResponseWriter, r *http
 	logger.Debug("In Handler for Response Path: ", mockResponse.Path)
 	logger.Debug("In Handler for Response Method: ", mockResponse.Method)
 
+	err := r.ParseMultipartForm(28)
+	if err != nil {
+		logger.Info("Multipart Parsing Ignore", err)
+	}
+
 	var response Response
 	for {
 		response = mockResponse.Responses[mockResponse.NextResponse]
+
 		if response.SkipEvery > 0 && response.ResponseCounter < response.SkipEvery {
 			response.ResponseCounter++
 			continue
 		}
+
 		mockResponse.NextResponse++
-		if mockResponse.NextResponse > len(mockResponse.Responses) {
+
+		if mockResponse.NextResponse >= len(mockResponse.Responses) {
 			mockResponse.NextResponse = 0
 		}
 		break
