@@ -9,7 +9,7 @@ import (
 
 //TestProcessMockingYAML valid test
 func TestProcessMockingYAML(t *testing.T) {
-	mockingYAML, err := ProcessMockingYAML(".././test_resources/mocking_test.yaml")
+	mockingYAML, err := ProcessMockingYAML("../test_resources/mocking_test.yaml")
 	if err != nil {
 		t.Fatalf("FAIL TestProcessMockingYAML test for valid input")
 	}
@@ -26,7 +26,7 @@ func TestProcessMockingYAML(t *testing.T) {
 
 //TestProcessMockingYAML_Invalid invalid test
 func TestProcessMockingYAML_Invalid(t *testing.T) {
-	_, err := ProcessMockingYAML(".././test_resources/mocking_test_invalid.yaml")
+	_, err := ProcessMockingYAML("../test_resources/mocking_test_invalid.yaml")
 	if err == nil {
 		t.Fatalf("FAIL TestProcessMockingYAML_Invalid test for invalidInput")
 	}

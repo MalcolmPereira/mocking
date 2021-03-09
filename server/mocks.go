@@ -155,6 +155,7 @@ func validateMockRequest(mocks []Mocks, resource string, fileName string) error 
 			logger.Error("Invalid Mock Method, valid mock method required for request in mockResouce: " + fileName)
 			return errors.New("Invalid Mock Method, valid mock method required for request in mockResouce: " + fileName)
 		}
+
 		resourcePath := resource + mock.Mock.Request.Path + mock.Mock.Request.Method
 		resourceFile := mockResourceMap[resource+mock.Mock.Request.Path+mock.Mock.Request.Method]
 		if len(strings.TrimSpace(resourceFile)) != 0 {
