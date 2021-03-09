@@ -5,14 +5,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/malcolmpereira/mocking/server"
+	server "github.com/malcolmpereira/mocking/mockingserver"
 	logger "github.com/sirupsen/logrus"
 )
 
 //main functin for mocking utility
 func main() {
 	logger.Info("Start mocking..")
-	var mockingYAML = "mocking.yaml"
+	var mockingYAML = "./mocking_demo/mocking.yaml"
 
 	if len(os.Args) > 1 && len(strings.TrimSpace(os.Args[1])) > 0 {
 		mockingYAML = os.Args[1]

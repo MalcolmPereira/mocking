@@ -1,0 +1,9 @@
+version: 0.1
+name: MockingServer
+port: 2021
+loglevel: INFO
+https:
+  certfile: ./mocking_demo/certificates/mockingServer.crt
+  certkeyfile: ./mocking_demo/certificates/mockingServer.key
+mockfoldersfiles:
+  - ./mocking_demo/demo_mocks
