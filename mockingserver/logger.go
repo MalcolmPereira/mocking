@@ -7,7 +7,7 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
-//LogLevel configures the log leve
+//LogLevel configures the log level in the logger
 func LogLevel(loglevel string) {
 	if strings.EqualFold("DEBUG", loglevel) {
 		logger.SetLevel(logger.DebugLevel)

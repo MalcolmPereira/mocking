@@ -14,7 +14,7 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
-//MockResponses to return
+//MockResponses
 type MockResponses struct {
 	Path         string
 	Method       string
@@ -22,7 +22,7 @@ type MockResponses struct {
 	Responses    []Response
 }
 
-//AllMocks to return
+//AllMocks mocks that the sever currently serves
 type AllMocks struct {
 	Responses []MockResponses
 }

@@ -15,9 +15,6 @@ import (
 //MockingYAML
 var mockingYAML *MockingYAML
 
-//HTTP Server
-var server *http.Server
-
 //StartServer parses mocking.yaml file to start mocking api
 func StartServer(yamlFilePath string) {
 	logger.SetLevel(logger.DebugLevel)
@@ -73,7 +70,7 @@ func getHTTPServer(mocks []MockResource) *http.Server {
 		Debug:            true,
 	}).Handler(router)
 
-	server = &http.Server{
+	server := &http.Server{
 		Addr:         "0.0.0.0:" + mockingYAML.Port,
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,

@@ -32,11 +32,13 @@ type MockingYAML struct {
 //ProcessMockingYAML parses and validates mocking api yaml file
 func ProcessMockingYAML(yamlFilePath string) (*MockingYAML, error) {
 	mockingYAML := MockingYAML{}
+
 	yamlFile, err := ioutil.ReadFile(yamlFilePath)
 	if err != nil {
 		logger.Error("Error reading mocking YAML file ", err)
 		return nil, errors.New("Error reading mocking YAML file")
 	}
+
 	err = yaml.Unmarshal(yamlFile, &mockingYAML)
 	if err != nil {
 		logger.Error("Error processing mocking YAML file ", err)
@@ -44,6 +46,7 @@ func ProcessMockingYAML(yamlFilePath string) (*MockingYAML, error) {
 	}
 
 	err = validateYAML(&mockingYAML)
+
 	if err != nil {
 		logger.Error("Error validating mocking YAML file ", err)
 		return nil, errors.New("Error validating mocking YAML file")

@@ -1,4 +1,4 @@
-// Package main for ckureit utility
+// Package main for mocking server utility
 package main
 
 import (
@@ -9,7 +9,7 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
-//main functin for mocking utility
+//main function for mocking utility
 func main() {
 	logger.Info("Start mocking..")
 	var mockingYAML = "./mocking_demo/mocking.yaml"
