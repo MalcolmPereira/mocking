@@ -1,3 +1,4 @@
+mockversion: 0.1
 name: Image API
 resource: /imageapi
 mocks:

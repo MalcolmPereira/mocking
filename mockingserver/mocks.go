@@ -188,6 +188,11 @@ func processMockFile(fileBytes []byte, fileName string) (MockResource, error) {
 
 //validateMockResource validates mocks for completeness and duplicates
 func validateMockResource(mockresource *MockResource, fileName string) error {
+	if len(strings.TrimSpace(mockresource.MockVersion)) == 0 || strings.TrimSpace(mockresource.MockVersion) != currentMockVersion {
+		logger.Error("Invalid Mock Version, valid mock version required in mockResouce: " + fileName)
+		return errors.New("Invalid Mock Version, valid mock version  required in mockResouce: " + fileName)
+	}
+
 	if len(strings.TrimSpace(mockresource.Name)) == 0 {
 		logger.Error("Invalid Mock Name, valid mock name required in mockResouce: " + fileName)
 		return errors.New("Invalid mock name, valid mock name required in mockResouce: " + fileName)

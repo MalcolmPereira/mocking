@@ -1,3 +1,4 @@
+mockversion: 0.1
 name: Mock Demo
 resource: /mock
 mocks:
