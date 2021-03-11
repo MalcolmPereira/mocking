@@ -35,11 +35,7 @@ func SetMocks(router *mux.Router, resources []MockResource) {
 	for _, resource := range resources {
 		for _, mock := range resource.Mocks {
 
-			logger.Info("Got resource: ", resource.Resource)
-
 			path := mock.Mock.Request.Path
-
-			logger.Info("Got path: ", path)
 
 			if len(strings.TrimSpace(path)) > 0 && !strings.HasPrefix(strings.TrimSpace(path), "/") {
 				path = resource.Resource + "/" + path
@@ -49,8 +45,6 @@ func SetMocks(router *mux.Router, resources []MockResource) {
 			mock.Mock.Request.Path = path
 
 			method := mock.Mock.Request.Method
-			logger.Debug("Got Resource Path: ", mock.Mock.Request.Path)
-			logger.Debug("Got Resource Method: ", mock.Mock.Request.Method)
 
 			var responseMocks []Response
 			for _, mockResponse := range mock.Mock.Responses {

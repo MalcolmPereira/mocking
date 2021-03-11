@@ -1,10 +1,20 @@
 # Mocking API Server
 
+## Starting Mock API Server
+
+./mocking [path to mocking configuration yaml]
+
+e.g. -  ./mocking mocking_demo/mocking.yaml
+
+![Starting Mocking API Server](./readme_assets/start_mocking.png)
+
+This now exposes mock responses for https://localhost:2021/mock and https://localhost:2021/imageapi based on the mocking_demo/mocking.yaml configuration
+
 ## Configuration Files
 
 1. mocking.yaml
 
-    This configuration file configures mocking api server.
+    This configuration file configures mocking api server and tells the mocking api where to find mock configurations for mocking responses.
 
     The file can be named anything as long as it is valid yaml with configurations listed below.
 
@@ -33,26 +43,40 @@
 
 2. mocks.yaml
 
-    This is mock that will be served by mocking api server.
+    This configures mock responses that will be served by mocking api server.
 
-    Multiple mock files can be specified for the mocking api server. The combination of Resource + Path + Method must be unique, any duplicates will be ignored by  mocking api server. Multiple responses can be specified for Resource + Path + Method combination which will be iterated through sequentially.
+    Multiple mock files can be specified for mocking api server. The combination of Resource + Path + Method must be unique, any duplicates will be ignored by mocking api server. Multiple responses can be specified for Resource + Path + Method combination which will be iterated through sequentially.
 
     The mock configuration is specified in yaml and can be named anything as long as it is valid yaml and consists of following settings.
 
         mockversion: (Required) This should be set to 0.1
 
-        name: (Required) Named for the mock , can be any string example:- Mock Demo
+        name: (Required) Name for the mock , can be any string example:- Mock Demo
 
         resource: (Required) The resource that is being mocked example: /mock , so the mock URI would consists of http(s)://<SERVER>:<PORT>/mock
 
-        mocks: (Required) This consists of array of mock, each mock serves mock for the resource configured with respect to path, methods and various responses. mocks contains collections of mock
+        mocks: (Required) This will contain collections of mock, each mock resprsents path and method that will be mocked and mock responses it will serve.
 
         mock: (Required) This is a mock for a unique combination of Resource + Path + Method. Each mock is made up of request and collection of responses.
 
-        request: This is the mock request which will be handled by the mocking api server which is made up of path and method.
+        request: (Required)  This is the mock request which will be handled by mocking api server which is made up of path and method.
         
-        path: This is any path under resource defined for mock at the global level, if the path is not specified the global resource path will be used else this path will be appended to the global resource path to make up resource + "/" + path
+        path: (Optional) This is any path under resource defined for mock at the global level, if the path is not specified global resource will be used else path will be appended to the global resource to make up resource + "/" + path
 
-        method: This is the request method that will be handled by the mocking api server.
+        method: (Required) This is request method that will be handled by mocking api server.
 
+        responses: (Required) This contains collection of response that will be mocked for given request. When more than one responses are available, then will be served sequentially on each invocation.
 
+        response: (Required) This is the mock response made up of headers, status, body, file, delay, skipevery.
+
+        headers: (Optional), headers to be mocked specified as "key : value"
+
+        status: (Required), status code for the response.
+
+        body: (Optional)  mock response body
+
+        file: (Optional)  mock response file, either body or file is required.
+
+        delay: (Optional) stall the response for configured time.
+
+        skipevery: (Optional) serves this response every x number of times, 0 will skip this request.

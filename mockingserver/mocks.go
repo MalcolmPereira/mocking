@@ -69,12 +69,8 @@ func ProcessMocks(mocks []string) ([]MockResource, error) {
 
 	var mockResourceList []MockResource
 
-	logger.Info("got mockResourceMap", mockResourceMap)
-
 	for _, mock := range mocks {
 		logger.Debug("Start processing mocks folder : ", mock)
-
-		logger.Info("got mockResourceMap", mockResourceMap)
 
 		mock = strings.TrimSpace(mock)
 
@@ -205,13 +201,14 @@ func validateMockResource(mockresource *MockResource, fileName string) error {
 		mockresource.Resource = "/" + mockresource.Resource
 	}
 
-	return validateMockRequest(mockresource.Mocks, mockresource.Resource, fileName)
+	return validateMocks(mockresource.Mocks, mockresource.Resource, fileName)
 }
 
-//validateMockRequest validates mock requests and check for any duplicates
-func validateMockRequest(mocks []Mocks, resource string, fileName string) error {
+//validateMocks validates mocks and check for any duplicates
+func validateMocks(mocks []Mocks, resource string, fileName string) error {
 
 	for _, mock := range mocks {
+
 		if len(strings.TrimSpace(mock.Mock.Request.Method)) == 0 {
 			logger.Error("Invalid Mock Method, valid mock method required for request in mockResouce: " + fileName)
 			return errors.New("Invalid Mock Method, valid mock method required for request in mockResouce: " + fileName)
@@ -219,6 +216,7 @@ func validateMockRequest(mocks []Mocks, resource string, fileName string) error 
 
 		resourcePath := resource + mock.Mock.Request.Path + mock.Mock.Request.Method
 		resourceFile := mockResourceMap[resource+mock.Mock.Request.Path+mock.Mock.Request.Method]
+
 		if len(strings.TrimSpace(resourceFile)) != 0 {
 			logger.Error("Invalid Mock definiton, Duplicate Path: " + resourcePath + " , found in: " + resourceFile + " and " + fileName)
 			return errors.New("Invalid Mock definiton, Duplicate Path: " + resourcePath + " , found in: " + resourceFile + " and " + fileName)
@@ -230,7 +228,7 @@ func validateMockRequest(mocks []Mocks, resource string, fileName string) error 
 			return errors.New("Invalid Mock Responses, valid mock reponses required for request in mockResouce: " + fileName)
 		}
 
-		err := validateMockResponse(mock.Mock.Responses, resourcePath, fileName)
+		err := validateMockResponses(mock.Mock.Responses, resourcePath, fileName)
 		if err != nil {
 			return err
 		}
@@ -240,8 +238,9 @@ func validateMockRequest(mocks []Mocks, resource string, fileName string) error 
 }
 
 //validateMockResponse validates mock responses and check for any duplicates
-func validateMockResponse(responses []Responses, resourcePath string, fileName string) error {
+func validateMockResponses(responses []Responses, resourcePath string, fileName string) error {
 	for _, mockresponse := range responses {
+
 		if len(strings.TrimSpace(http.StatusText(mockresponse.Response.Status))) == 0 {
 			logger.Error("Invalid Mock Responses Status Code , valid mock reponse status code  required for request  " + resourcePath + " in mockResouce: " + fileName)
 			return errors.New("Invalid Mock Responses Status Code , valid mock reponse status code required for request  " + resourcePath + " in mockResouce: " + fileName)
@@ -254,7 +253,9 @@ func validateMockResponse(responses []Responses, resourcePath string, fileName s
 			logger.Error("Invalid Mock definiton, Duplicate Status Code : " + statusString + " , found for : " + resourcePath + " int " + fileName)
 			return errors.New("Invalid Mock definiton, Duplicate Status Code : " + statusString + " , found for : " + resourcePath + " int " + fileName)
 		}
+
 		mockresponse.Response.ResponseCounter = 0
+
 	}
 	return nil
 }
