@@ -1,5 +1,11 @@
 # Mocking APIs
 
+Mocking for End to End testing, Simple Http/Https mocking server for end to end testing implemented in Go.Simple service to easily get started with mocking for end to end testing and development.
+
+## TL;DR
+
+Mocking API Server - Simple service to easily get started with mocking for end to end testing and development implemented in Go.
+
 ## Unit Testing
 
 Test Driven Development emphasizes starting with test cases first, writing a failing test and then implementation to make the test pass, we continue working our way up following the “red/green/refactor” mantra building on our implementation.
